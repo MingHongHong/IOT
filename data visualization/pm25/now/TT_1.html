@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+        <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+    <script src="http://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+    <style>
+        .liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
+    </style>
+</head>
+<body>
+<svg id="fillgauge2" width="200px" height="200px" onclick="gauge2.update(NewValue());" style="padding-left: 20px"></svg>
+<br/>
+<div id="date" style="color: white;font-size: 18px;font-family: Lora,'Helvetica Neue',Helvetica,Arial,sans-serif;line-height: 1.42857143; padding-top: 30px;padding-left: 20px">Date: 26 June 2017 16:16:24</div>
+
+<script language="JavaScript">
+var rec;
+    $(document).ready(function() {
+        $.ajax({
+            url: "https://thingspeak.com/channels/270344/feed.json",
+            type: "GET",
+            dataType: "json",
+            success: function(JData) {
+                // console.log(JData);
+                var NumOfJData = JData["feeds"].length;
+                    //console.log("Latitude: %s, Longitude: %s", JData["feeds"][i]["field2"], JData["feeds"][i]["field3"]);
+					if(JData["feeds"][NumOfJData-1]["field2"]!=null&&JData["feeds"][NumOfJData-1]["field3"]!=null){
+					if(JData["feeds"][NumOfJData-1]["field1"]==null)
+						rec=10;
+						
+					else
+						rec=JData["feeds"][NumOfJData-1]["field1"];
+							var config1 = liquidFillGaugeDefaultSettings();
+							config1.displayPercent = false;
+							var gauge2= loadLiquidFillGauge("fillgauge2", rec, config1);
+							var config2 = liquidFillGaugeDefaultSettings();
+							config2.circleColor = "#D4AB6A";
+							config2.textColor = "#553300";
+							config2.waveTextColor = "#805615";
+							config2.waveColor = "#AA7D39";
+							config2.circleThickness = 0.1;
+							config2.circleFillGap = 0.2;
+							config2.textVertPosition = 0.8;
+							config2.waveAnimateTime = 2000;
+							config2.waveHeight = 0.3;
+							config2.waveCount = 1;
+							function NewValue(){
+								if(Math.random() > .5){
+									return Math.round(Math.random()*100);
+								} else {
+									return (Math.random()*100).toFixed(1);
+								}
+							}
+						var monthNames = [ "January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December" ];
+						var date = new Date(JData["feeds"][NumOfJData-1]["created_at"]);
+						$("#date").text('Date: ' + date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear() +' '+ date.getHours()+":"+ date.getHours()+":"+ date.getSeconds());
+						//L.circle([JData["feeds"][i]["field2"], JData["feeds"][i]["field3"]],{color:"red"}).addTo(mymap).bindPopup(JData["feeds"][i]["field1"]);
+						//L.map('mapid').setView([JData["feeds"][i]["field2"],JData["feeds"][i]["field3"]], 0);
+
+					}
+                
+                
+            },
+
+            error: function() {
+                alert("ERROR!!!");
+            }
+        });
+
+
+    });		
+
+</script>
+</body>
+</html>
